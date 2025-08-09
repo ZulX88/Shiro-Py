@@ -4,7 +4,7 @@ from neonize.utils import build_jid, get_message_type
 class Mess:
     def __init__(self, client, message, user):
         self.client = client
-        self.message = message.Message
+        self.message = message
         self.user = user
         self.get_msg_type = get_message_type(message)
         self.sender = message.Info.MessageSource.Sender

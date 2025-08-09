@@ -176,6 +176,12 @@ async def eval_message(m: Mess, cmd: str, client: NewAClient):
 
 async def handler(client: NewAClient, message: MessageEv):
     try:
+        async def check_owner(sender):
+            if sender.Server == "s.whatsapp.net":
+                return sender.User in config.owner 
+            elif sender.Server == "lid":
+                pn = await client.get_pn_from_lid(sender)
+                return pn.User in config.owner 
         m = await Mess.create(client, message)
         budy = (
             message.Message.conversation
@@ -196,11 +202,7 @@ async def handler(client: NewAClient, message: MessageEv):
                 text = parts[1]
         is_group = m.is_group
         groupMetadata = await client.get_group_info(m.chat) if is_group else None
-        is_owner = (
-            m.sender.User in config.owner
-            if m.sender.Server == "s.whatsapp.net"
-            else m.senderAlt.User in config.owner if m.sender.Server == "lid" else None
-        )
+        is_owner = await check_owner(m.sender)
         is_admin = False
         isBotAdmin = False
 
@@ -223,8 +225,6 @@ async def handler(client: NewAClient, message: MessageEv):
             return f"*Contoh* : {prefix}{command} " + str(teks)
 
         match command:
-            case "own":
-                await m.reply(is_owner)
             case "fbdl" | "fb" | "facebook" | "fesnuk":
                 if not text:
                     return await m.reply(Example("link"))
@@ -408,7 +408,7 @@ async def handler(client: NewAClient, message: MessageEv):
                     quoted=message,
                 )
             case "debug":
-                await client.send_message(build_jid("601164899724"), message.__str__())
+                await client.send_message(m.chat, message.__str__())
             case "viewonce":
                 await client.send_image(
                     m.chat,
