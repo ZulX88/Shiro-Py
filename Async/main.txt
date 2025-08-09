@@ -1,0 +1,142 @@
+import asyncio
+import logging
+import os
+import config
+import re
+import string
+import random
+import sys
+import requests 
+import json
+from urllib.parse import quote, urlparse
+from datetime import timedelta
+from neonize.client import NewClient 
+from neonize.aioze.client import NewAClient, ClientFactory,ContactStore
+from neonize.aioze.events import ConnectedEv, MessageEv, PairStatusEv, ReceiptEv, CallOfferEv, event, GroupInfoEv
+from neonize.proto.waE2E.WAWebProtobufsE2E_pb2 import (
+    Message,
+    FutureProofMessage,
+    InteractiveMessage,
+    MessageContextInfo,
+    DeviceListMetadata,
+)
+from command import handler
+from neonize.types import MessageServerID
+from neonize.utils import log, build_jid,get_message_type 
+from neonize.utils.enum import ReceiptType, VoteType,ParticipantChange
+import signal
+
+
+sys.path.insert(0, os.getcwd())
+
+
+def interrupted(*_):
+    loop = asyncio.get_event_loop()
+    asyncio.run_coroutine_threadsafe(ClientFactory.stop(), loop)
+
+
+log.setLevel(logging.DEBUG)
+signal.signal(signal.SIGINT, interrupted)
+
+
+client = NewAClient(config.namedb)
+@client.event(ConnectedEv)
+async def on_connected(_: NewAClient, __: ConnectedEv):
+    print("⚡ Connected")
+
+@client.event(ReceiptEv)
+async def on_receipt(_: NewAClient, receipt: ReceiptEv):
+    print(receipt)
+
+
+@client.event(CallOfferEv)
+async def on_call(_: NewAClient, call: CallOfferEv):
+    log.debug(call)
+
+# @client.event(GroupInfoEv)
+# async def greetz(client: NewAClient, greet: GroupInfoEv):
+    # user_obj = (
+        # greet.Join[0] if greet.Join else
+        # greet.Leave[0] if greet.Leave else
+        # greet.Promote[0] if greet.Promote else
+        # greet.Demote[0] if greet.Demote else
+        # None
+    # )
+    # user = None
+    # if user_obj and user_obj.Server == "lid":
+        # user = await client.get_pn_from_lid(user_obj)
+    # else:
+        # user = (
+            # greet.Join[0].User if greet.Join
+            # else greet.Leave[0].User if greet.Leave
+            # else greet.Promote[0].User if greet.Promote
+            # else greet.Demote[0].User if greet.Demote
+            # else None
+        # )       
+        
+    # contekto = await client.contact.get_contact(
+        # greet.Join[0] if greet.Join        
+        # else greet.Leave[0] if greet.Leave
+        # else greet.Promote[0] if greet.Promote
+        # else greet.Demote[0] if greet.Demote       
+        # else None
+    # )
+    # pushname = contekto.PushName
+    # senderc = await client.contact.get_contact(
+        
+    # )
+    # if greet.Leave:
+        # if greet.Sender.User == user:
+            # return await client.send_message(greet.JID,f"Good bye @{pushname} 🥀")
+        # else:
+            # return await client.send_message(greet.JID,f"Stupid nigga got kicked @{pushname} 🤓")
+    # elif greet.Join:
+        # return await client.send_message(greet.JID, f"Welcome @{pushname}! 🌹")
+    # elif greet.Promote:
+        # return await client.send_message(greet.JID, f"Congrats! @{pushname} has been promoted to admin by @{sender_pushname} 🥳")
+    # elif greet.Demote:
+        # return await client.send_message(greet.JID, f"Oops! @{user} has been demoted from admin by @{greet.Sender.User} 🤐")    
+            
+@client.event(MessageEv)
+async def on_message(client: NewAClient, message: MessageEv):
+    await handler(client, message)
+
+@client.event(PairStatusEv)
+async def PairStatusMessage(_: NewAClient, message: PairStatusEv):
+    print(f"logged as {message.ID.User}")
+
+
+@client.paircode
+async def default_blocking(client: NewAClient, code: str, connected: bool = True):
+    """
+    A default callback function that handles the pair code event.
+    This function is called when the pair code event occurs, and it blocks the execution until the event is processed.
+
+    :param client: The client instance that triggered the event.
+    :type client: NewAClient
+    :param code: The pair code as a string.
+    :type code: str
+    :param connected: A boolean indicating if the client is connected.
+    :type connected: bool
+    """
+    if connected:
+        log.info("Pair code successfully processed: %s", code)
+    else:
+        log.info("Pair code: %s", code)
+
+async def main():
+    islog = await client.is_logged_in
+    if not islog:                
+        number = input("Nomor WA : ")
+        await client.PairPhone(str(number),show_push_notification=True)
+    
+    await client.connect()
+    await client.idle()
+
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(main())
+    finally:
+        loop.close()
