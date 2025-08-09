@@ -28,7 +28,9 @@ else
     echo "libmagic, python3, pip, git, ffmpeg"
     exit 1
 fi
-
+echo "[INFO] Cloning repo..."
+git clone "https://github.com/ZulX88/Shiro-Py"
+cd Shiro-Py
 echo "[INFO] Install Python dependencies..."
 pip install --break-system-packages -r requirements.txt || pip install -r requirements.txt
 

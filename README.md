@@ -10,7 +10,7 @@ Thanks to @Nubuki-all for the documentation!
 
 # Install
 ```bash
-bash <(curl -s ")
+bash <(curl -s "https://raw.githubusercontent.com/ZulX88/Shiro-Py/refs/heads/main/install.sh")
 ```
 
 # Gen session
