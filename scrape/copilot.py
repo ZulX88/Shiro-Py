@@ -1,34 +1,34 @@
-import websocket
 import json
 import threading
+
 import requests
+import websocket
+
 
 def createConversationID():
     response = requests.post("https://copilot.microsoft.com/c/api/conversations").json()
     return response["id"]
-    
+
+
 def send_copilot_request(text):
     url = "wss://copilot.microsoft.com/c/api/chat?api-version=2&features=-,ncedge,edgepagecontext&setflight=-,ncedge,edgepagecontext&ncedge=1"
-    
-    conversationID = createConversationID() 
+
+    conversationID = createConversationID()
 
     payload = {
         "event": "send",
         "content": [
-            {
-                "type": "text",
-                "text": text# "Halo! Aku chika, bisa kenalan denganmu??"
-            }
+            {"type": "text", "text": text}  # "Halo! Aku chika, bisa kenalan denganmu??"
         ],
-        "conversationId":conversationID 
+        "conversationId": conversationID,
     }
 
     # Global state
     full_response = {
-        "conversationId":conversationID,
+        "conversationId": conversationID,
         "messageId": None,
         "text": "",
-        "suggestions": []
+        "suggestions": [],
     }
 
     has_done = False
@@ -42,7 +42,10 @@ def send_copilot_request(text):
         if data.get("event") == "startMessage":
             full_response["messageId"] = data.get("messageId")
 
-        elif data.get("event") == "appendText" and data.get("messageId") == full_response["messageId"]:
+        elif (
+            data.get("event") == "appendText"
+            and data.get("messageId") == full_response["messageId"]
+        ):
             full_response["text"] += data.get("text", "")
 
         elif data.get("event") == "done":
@@ -62,15 +65,15 @@ def send_copilot_request(text):
         done_event.set()
 
     def on_close(ws, close_status_code, close_msg):
-        pass  
+        pass
 
     ws = websocket.WebSocketApp(
         url,
-        #header=headers,
+        # header=headers,
         on_open=on_open,
         on_message=on_message,
         on_error=on_error,
-        on_close=on_close
+        on_close=on_close,
     )
 
     def run_ws():
@@ -82,4 +85,3 @@ def send_copilot_request(text):
     done_event.wait()
 
     return json.dumps(full_response, indent=2, ensure_ascii=False)
-
