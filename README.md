@@ -121,7 +121,7 @@ If you like this project, consider:
 
 - ⭐ Starring it on GitHub
 - 🔄 Sharing it with friends
-- ☕ Buying the developer a coffee (if donation link is available)
+- ☕ Buy me a [coffer](https://saweria.co/zhansetya)
 
 ---
 
