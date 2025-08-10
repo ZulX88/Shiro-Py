@@ -1,3 +1,4 @@
+
 <p align="center">
   <img src="https://files.cloudkuimages.guru/images/ZHbkA9iQ.jpg" alt="ShiroBOT Logo" width="200"/>
 </p>
@@ -5,7 +6,7 @@
 <h1 align="center">🤖 ShiroBOT</h1>
 
 <p align="center">
-  <strong>WhatsApp BOT berbasis Python dengan Asynchronous</strong>
+  <strong>WhatsApp BOT based on Python with Asynchronous</strong>
 </p>
 
 <p align="center">
@@ -25,36 +26,36 @@
 
 ---
 
-## 🌟 Tentang ShiroBOT
+## 🌟 About ShiroBOT
 
-ShiroBOT adalah bot WhatsApp yang kuat dan mudah digunakan, dibangun dengan Python menggunakan teknologi asynchronous untuk performa yang optimal. Dengan berbagai fitur menarik, bot ini siap membantu kebutuhan otomatisasi Anda di WhatsApp.
+ShiroBOT is a powerful and easy-to-use WhatsApp bot, built with Python using asynchronous technology for optimal performance. With various exciting features, this bot is ready to assist your automation needs on WhatsApp.
 
-### ✨ Fitur Utama
-- 🚀 **Performa Tinggi** - Menggunakan asynchronous programming
-- 🔧 **Mudah Dikustomisasi** - Struktur kode yang rapi dan modular
-- 📱 **Integrasi WhatsApp** - Terhubung langsung dengan akun WhatsApp Anda
-- ⚡ **Responsif** - Waktu respons cepat untuk pengalaman pengguna terbaik
-
----
-
-## 📚 Dokumentasi
-
-Belum familiar dengan modulnya? Baca dokumentasi lengkap di:
-[📖 Dokumentasi Resmi](https://nubuki-all.github.io/neonize)
-
-**Terima kasih khusus kepada @Nubuki-all atas dokumentasi yang luar biasa!** 🙏
+### ✨ Main Features
+- 🚀 **High Performance** - Utilizes asynchronous programming
+- 🔧 **Easy to Customize** - Clean and modular code structure
+- 📱 **WhatsApp Integration** - Directly connects with your WhatsApp account
+- ⚡ **Responsive** - Fast response time for the best user experience
 
 ---
 
-## ⚡ Instalasi Cepat
+## 📚 Documentation
 
-Jalankan perintah berikut di terminal Anda:
+Not familiar with the modules? Read the complete documentation here:
+[📖 Official Documentation](https://nubuki-all.github.io/neonize)
+
+**Special thanks to @Nubuki-all for the amazing documentation!** 🙏
+
+---
+
+## ⚡ Quick Installation
+
+Run the following command in your terminal:
 
 ```bash
 bash <(curl -s "https://raw.githubusercontent.com/ZulX88/Shiro-Py/refs/heads/main/install.sh")
 ```
 
-Atau clone repository secara manual:
+Or manually clone the repository:
 
 ```bash
 git clone https://github.com/ZulX88/Shiro-Py.git
@@ -65,62 +66,62 @@ chmod +x install.sh
 
 ---
 
-## 🎯 Cara Menggunakan
+## 🎯 How to Use
 
 ### 1. Generate Session
-Buat session bot Anda terlebih dahulu:
+First, create your bot session:
 
 ```bash
 python3 gen.py
 ```
 
-Ikuti instruksi yang muncul untuk menghubungkan dengan WhatsApp Anda.
+Follow the instructions that appear to connect with your WhatsApp.
 
-### 2. Menjalankan Bot
-Setelah session dibuat, jalankan bot dengan:
+### 2. Running the Bot
+Once the session is created, run the bot with:
 
 ```bash
 python3 main.py
 ```
 
-Bot akan aktif dan siap digunakan!
+The bot will be active and ready to use!
 
 ---
 
-## 🛠️ Persyaratan Sistem
+## 🛠️ System Requirements
 
-- Python 3.8 atau lebih tinggi
-- pip (package installer untuk Python)
-- Koneksi internet yang stabil
-- Akun WhatsApp yang akan digunakan untuk bot
-
----
-
-## 🤝 Kontribusi
-
-Kontribusi Anda sangat kami nantikan! Untuk berkontribusi:
-
-1. Fork repository ini
-2. Buat branch fitur Anda (`git checkout -b feature/AmazingFeature`)
-3. Commit perubahan Anda (`git commit -m 'Add some AmazingFeature'`)
-4. Push ke branch (`git push origin feature/AmazingFeature`)
-5. Buka Pull Request
+- Python 3.8 or higher
+- pip (Python package installer)
+- Stable internet connection
+- WhatsApp account to be used for the bot
 
 ---
 
-## 📄 Lisensi
+## 🤝 Contribution
+
+We highly welcome your contributions! To contribute:
+
+1. Fork this repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
-## 🙋‍♂️ Dukungan
+## 🙋‍♂️ Support
 
-Jika Anda menyukai proyek ini, pertimbangkan untuk:
+If you like this project, consider:
 
-- ⭐ Memberikan bintang di GitHub
-- 🔄 Membagikan kepada teman-teman
-- ☕ Membeli kopi untuk pengembang (jika tersedia link donasi)
+- ⭐ Starring it on GitHub
+- 🔄 Sharing it with friends
+- ☕ Buying the developer a coffee (if donation link is available)
 
 ---
 
