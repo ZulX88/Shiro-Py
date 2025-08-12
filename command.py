@@ -7,7 +7,7 @@ import sys
 import traceback
 import urllib.parse
 from urllib.parse import quote, urlparse
-
+from typerist.message import Messages 
 import requests
 from neonize.aioze.client import ClientFactory, ContactStore, NewAClient
 from neonize.aioze.events import MessageEv, event
@@ -95,7 +95,6 @@ async def eval_message(m: Mess, cmd: str, client: NewAClient):
         sys.stdout = old_stdout
         sys.stderr = old_stderr
 
-        # --- Pembuatan Output Akhir ---
         final_output_parts = [f"```python\n{cmd}\n```"]
 
         if exception_data:
@@ -205,14 +204,14 @@ async def handler(client: NewAClient, message: MessageEv):
         is_owner = await check_owner(m.sender)
         is_admin = False
         isBotAdmin = False
-
+        user_bot = await client.get_me()
         if is_group and groupMetadata:
             for participant in groupMetadata.Participants:
                 if participant.JID.User == m.sender.User and (
                     participant.IsAdmin or participant.IsSuperAdmin
                 ):
                     is_admin = True
-                if participant.JID.User == m.user.JID.User and (
+                if participant.JID.User == user_bot.JID.User and (
                     participant.IsAdmin or participant.IsSuperAdmin
                 ):
                     isBotAdmin = True
@@ -293,7 +292,7 @@ async def handler(client: NewAClient, message: MessageEv):
                 for user in groupMetadata.Participants:
                     tagged += f"@{user.JID.User} "
                 await client.send_message(
-                    m.chat, message=str(text), ghost_mentions=tagged
+                    m.chat, message=str(text), ghost_mentions=tagged,mentions_are_lids=True
                 )
             case "mtype":
                 typek = get_message_type(message)
@@ -322,7 +321,7 @@ async def handler(client: NewAClient, message: MessageEv):
 
                     if data.get("images"):
                         for image_url in data["images"]:
-                            return await client.send_image(m.chat, str(image_url))
+                            return await client.send_album(m.chat, data["images"])
                     await client.send_video(m.chat, data["play"], quoted=message)
 
                 except requests.exceptions.RequestException:
@@ -585,9 +584,9 @@ async def handler(client: NewAClient, message: MessageEv):
 
             case _:
                 if budy.startswith("=>"):
-                    # if not is_owner:
-                    #     await m.reply("❌ Only owner can use eval!")
-                    #     return
+                    if not is_owner:
+                        await m.reply("❌ Only owner can use eval!")
+                        return
                     cmd = budy[2:].strip()
                     if not cmd:
                         await m.reply(

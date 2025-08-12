@@ -55,15 +55,6 @@ Run the following command in your terminal:
 bash <(curl -s "https://raw.githubusercontent.com/ZulX88/Shiro-Py/refs/heads/main/install.sh")
 ```
 
-Or manually clone the repository:
-
-```bash
-git clone https://github.com/ZulX88/Shiro-Py.git
-cd Shiro-Py
-chmod +x install.sh
-./install.sh
-```
-
 ---
 
 ## 🎯 How to Use
@@ -81,7 +72,7 @@ Follow the instructions that appear to connect with your WhatsApp.
 Once the session is created, run the bot with:
 
 ```bash
-python3 main.py
+python3 -m main
 ```
 
 The bot will be active and ready to use!
