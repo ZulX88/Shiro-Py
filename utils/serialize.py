@@ -1,5 +1,4 @@
 from neonize.utils import build_jid, get_message_type
-from typerist.message import Messages
 
 class Mess:
     def __init__(self, client, message):
@@ -17,17 +16,8 @@ class Mess:
 
     @classmethod
     async def create(cls, client, message):
-        instance = cls(client, message)  # simpan instance
-        return Messages(  # tambahkan field yang kurang
-            chat=instance.chat,
-            id=instance.id,
-            sender=instance.sender,
-            sender_alt=instance.sender_alt,
-            pushname="",  # tambahkan field yang diperlukan
-            is_group=instance.is_group,
-            mentioned_jid=[],  # tambahkan field yang diperlukan
-            message=message  # tambahkan field yang diperlukan
-        )
+        return cls(client, message)
+        
 
     async def reply(self, text):
         await self.client.reply_message(str(text), self.message)

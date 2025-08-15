@@ -7,7 +7,6 @@ import sys
 import traceback
 import urllib.parse
 from urllib.parse import quote, urlparse
-from typerist.message import Messages 
 import requests
 from neonize.aioze.client import ClientFactory, ContactStore, NewAClient
 from neonize.aioze.events import MessageEv, event

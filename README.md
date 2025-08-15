@@ -72,6 +72,11 @@ Follow the instructions that appear to connect with your WhatsApp.
 Once the session is created, run the bot with:
 
 ```bash
+python3 main.py 
+```
+or 
+
+```bash 
 python3 -m main
 ```
 
