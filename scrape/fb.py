@@ -33,12 +33,3 @@ def fb_download(url):
     else:
         raise Exception("Video download link not found")
 
-
-# Example usage:
-if __name__ == "__main__":
-    try:
-        url = "https://www.facebook.com/share/r/1BLkeuBx9G/"
-        link = fb_download(url)
-        print("Download link:", link)
-    except Exception as e:
-        print("Error:", e)

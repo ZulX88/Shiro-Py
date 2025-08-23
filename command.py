@@ -8,7 +8,7 @@ import traceback
 import urllib.parse
 from urllib.parse import quote, urlparse
 import requests
-from neonize.aioze.client import ClientFactory, ContactStore, NewAClient
+from neonize.aioze.client import NewAClient
 from neonize.aioze.events import MessageEv, event
 from neonize.proto.waE2E.WAWebProtobufsE2E_pb2 import (
     DeviceListMetadata,
@@ -22,9 +22,7 @@ from neonize.utils import build_jid, get_message_type
 from neonize.utils.enum import ParticipantChange, ReceiptType, VoteType
 
 import config
-from scrape.copilot import send_copilot_request
-from scrape.fb import fb_download
-from scrape.zerochan import zerochan
+from scrape import copilot ,zerochan ,fesnuk
 from utils.serialize import Mess
 
 
@@ -180,7 +178,7 @@ async def handler(client: NewAClient, message: MessageEv):
             elif sender.Server == "lid":
                 pn = await client.get_pn_from_lid(sender)
                 return pn.User in config.owner 
-        m = await Mess.create(client, message)
+        m = Mess(client, message)
         budy = (
             message.Message.conversation
             or getattr(message.Message, "extendedTextMessage", None)
@@ -226,7 +224,7 @@ async def handler(client: NewAClient, message: MessageEv):
             case "fbdl" | "fb" | "facebook" | "fesnuk":
                 if not text:
                     return await m.reply(Example("link"))
-                efbe_linko = fb_download(text)
+                efbe_linko = fesnuk(text)
                 await client.send_video(m.chat, efbe_linko, quoted=message)
             case "brat":
                 if not text:
@@ -319,8 +317,7 @@ async def handler(client: NewAClient, message: MessageEv):
                     data = response["data"]
 
                     if data.get("images"):
-                        for image_url in data["images"]:
-                            return await client.send_album(m.chat, data["images"])
+                        return await client.send_album(m.chat, data["images"])
                     await client.send_video(m.chat, data["play"], quoted=message)
 
                 except requests.exceptions.RequestException:
@@ -340,7 +337,7 @@ async def handler(client: NewAClient, message: MessageEv):
                         Example("bagaimana cara ngoding"), message
                     )
 
-                result = json.loads(send_copilot_request(text))
+                result = json.loads(copilot(text))
                 await client.send_message(m.chat, str(result["text"]))
 
             case "cekadmin":
@@ -601,5 +598,19 @@ async def handler(client: NewAClient, message: MessageEv):
                             m.chat,
                             f"💥 *Error in eval handler setup:*\n```python\n{str(e)}\n```\n```traceback\n{error_trace[-500:]}\n```",
                         )
+                elif budy.startswith("$"):
+                    if not is_owner:
+                        return await m.reply("Only owner!")
+                    command = budy[1:].strip()
+                    process = await asyncio.create_subprocess_shell(
+                        command,
+                        stdout=asyncio.subprocess.PIPE,
+                        stderr=asyncio.subprocess.PIPE,
+                    )
+                    stdout, stderr = await process.communicate()
+                    if stdout:
+                        await m.reply(stdout.decode())
+                    if stderr:
+                        await m.reply(stderr.decode())
     except Exception as e:
         print(f"{e}")
