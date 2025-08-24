@@ -1,5 +1,5 @@
 bot_name = "Shiro Bot"  # name
-version = "1.0.1"  # version
+version = "1.1.6"  # version
 owner = [""]  # owner number
-namedb = "db.sqlite3"  # name of your session db. Type : string
-prefix = "!"
+namedb = "db.sqlite3"  # name of your session db. You can use postgresql. Just fill like "postgre:". Type : string
+prefix = "!" # prefix 
