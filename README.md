@@ -71,11 +71,6 @@ Follow the instructions that appear to connect with your WhatsApp.
 ### 2. Running the Bot
 Once the session is created, run the bot with:
 
-```bash
-python3 main.py 
-```
-or 
-
 ```bash 
 python3 -m main
 ```
@@ -88,8 +83,6 @@ The bot will be active and ready to use!
 
 - Python 3.8 or higher
 - pip (Python package installer)
-- Stable internet connection
-- WhatsApp account to be used for the bot
 
 ---
 
