@@ -73,7 +73,7 @@ class QuotedMess:
         await self.client.send_message(
             self._chat,
             await self.client.build_reaction(
-                self.chat, self.sender, self.id, text
+                self._chat, self.sender, self.id, text
             )
         )
 
