@@ -1,17 +1,29 @@
-# utils/serialize.py
-
+from dataclasses import dataclass, field
 from neonize.utils import get_message_type
 from neonize.aioze.client import NewAClient
 from neonize.proto.waE2E.WAWebProtobufsE2E_pb2 import Message as RawMessage
-from typing import Optional, List
+from typing import Optional, List, Any
+from neonize.proto.Neonize_pb2 import JID 
+from neonize.utils import build_jid 
 
+def str_to_jid(jid : str) -> JID:
+    return build_jid(
+        jid.split("@")[0],
+        server=jid.split("@")[1]
+    )
 
+@dataclass
 class QuotedMess:
-    def __init__(self, client: NewAClient, context_info):
-        self.client = client
-        self.context_info = context_info
-        self.message = context_info.quotedMessage
-        self.sender = self.context_info.participant
+    client: NewAClient
+    context_info: Any
+    _chat: JID
+    message: Any = field(init=False)
+    sender: JID = field(init=False)
+    id: str = field(init=False)
+
+    def __post_init__(self):
+        self.message = self.context_info.quotedMessage
+        self.sender = str_to_jid(self.context_info.participant)
         self.id = self.context_info.stanzaID
 
         # Handle viewOnceMessage
@@ -52,10 +64,18 @@ class QuotedMess:
         if not self.is_media:
             return None
         msg_fields = self.message.ListFields()
-        if not msg_fields:  # guard tambahan biar aman
+        if not msg_fields:  
             return None
         field_name = msg_fields[0][0].name
         return field_name.replace("Message", "")
+        
+    async def react(self, text: str):
+        await self.client.send_message(
+            self._chat,
+            await self.client.build_reaction(
+                self.chat, self.sender, self.id, text
+            )
+        )
 
     async def reply(self, text):
         if not isinstance(text, str):
@@ -127,16 +147,30 @@ class QuotedMess:
 
         context_info = field_value.contextInfo
         mentioned_jid_list = getattr(context_info, "mentionedJID", [])
-        return list(mentioned_jid_list) if mentioned_jid_list else []
+        return [str_to_jid(jid) for jid in mentioned_jid_list] if mentioned_jid_list else []
 
 
+@dataclass
 class Mess:
-    def __init__(self, client: NewAClient, message):
-        self.client = client
-        self.message = message  # Neonize_pb2.Message
-        self.info = message.Info
+    client: NewAClient
+    message: Any
+    info: Any = field(init=False)
+    source: Any = field(init=False)
+    get_msg_type: str = field(init=False)
+    sender: JID = field(init=False)
+    sender_alt: Optional[JID] = field(init=False)
+    chat: JID = field(init=False)
+    from_me: bool = field(init=False)
+    is_group: bool = field(init=False)
+    addressing: Optional[str] = field(init=False)
+    id: str = field(init=False)
+    pushname: str = field(init=False)
+    is_edit: bool = field(init=False)
+
+    def __post_init__(self):
+        self.info = self.message.Info
         self.source = self.info.MessageSource
-        self.get_msg_type = get_message_type(message)
+        self.get_msg_type = get_message_type(self.message)
         self.sender = self.source.Sender
         self.sender_alt = getattr(self.source, "SenderAlt", None)
         self.chat = self.source.Chat
@@ -145,8 +179,16 @@ class Mess:
         self.addressing = "LID" if self.source.AddressingMode == 2 else "PN" if self.source.AddressingMode == 1 else None
         self.id = self.info.ID
         self.pushname = self.info.Pushname
-        self.is_edit = message.IsEdit
-
+        self.is_edit = self.message.IsEdit
+    
+    async def react(self, text: str):
+        await self.client.send_message(
+            self.chat,
+            await self.client.build_reaction(
+                self.chat, self.sender, self.id, text
+            )
+        )
+    
     @property
     def is_media(self) -> bool:
         msg_fields = self.message.Message.ListFields()
@@ -161,11 +203,11 @@ class Mess:
 
     @property
     def media_type(self) -> Optional[str]:
-        # Prioritaskan MediaType dari info (karena bisa ada label khusus seperti "gif")
+        
         if self.info.MediaType:
             return self.info.MediaType
 
-        # Fallback: baca dari field protobuf
+        
         msg_fields = self.message.Message.ListFields()
         if not msg_fields:
             return None
@@ -213,7 +255,7 @@ class Mess:
         if not hasattr(context_info, "quotedMessage") or not context_info.quotedMessage.ListFields():
             return None
 
-        return QuotedMess(self.client, context_info)
+        return QuotedMess(self.client, context_info,self.chat)
 
     @property
     def mentioned_jid(self) -> List[str]:
@@ -221,18 +263,20 @@ class Mess:
         msg_fields = msg.ListFields()
         if not msg_fields:
             return []
-
+    
         _, field_value = msg_fields[0]
         field_name = msg_fields[0][0].name
         if field_name in ("stickerMessage", "locationMessage"):
             return []
-
+    
         if not hasattr(field_value, "contextInfo"):
             return []
-
+    
         context_info = field_value.contextInfo
         mentioned_jid_list = getattr(context_info, "mentionedJID", [])
-        return list(mentioned_jid_list) if mentioned_jid_list else []
+        
+       
+        return [str_to_jid(jid) for jid in mentioned_jid_list] if mentioned_jid_list else []
 
     @property
     def media_info(self) -> dict:
@@ -245,7 +289,6 @@ class Mess:
 
         info = {
             "type": media_type,
-            # Umum
             "seconds": getattr(field_value, "seconds", None),
             "caption": getattr(field_value, "caption", None),
             "mimetype": getattr(field_value, "mimetype", None),
@@ -256,16 +299,12 @@ class Mess:
             "isAnimated": getattr(field_value, "isAnimated", None),
             "pageCount": getattr(field_value, "pageCount", None),  # PDF
             "jpegThumbnail": getattr(field_value, "JPEGThumbnail", None),
-
-            # Enkripsi & Download
             "mediaKey": getattr(field_value, "mediaKey", None),
             "fileSHA256": getattr(field_value, "fileSHA256", None),
             "fileEncSHA256": getattr(field_value, "fileEncSHA256", None),
             "directPath": getattr(field_value, "directPath", None),
             "URL": getattr(field_value, "URL", None),
-            "mediaKeyTimestamp": getattr(field_value, "mediaKeyTimestamp", None),
-
-            # Tambahan khusus
+            "mediaKeyTimestamp": getattr(field_value, "mediaKeyTimestamp", None),  
             "streamingSidecar": getattr(field_value, "streamingSidecar", None),
             "scansSidecar": getattr(field_value, "scansSidecar", None),
             "scanLengths": list(getattr(field_value, "scanLengths", [])) or None,

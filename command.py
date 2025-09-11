@@ -3,6 +3,7 @@ import io
 import json
 import os
 import re
+import re
 import sys
 import traceback
 import urllib.parse
@@ -295,12 +296,12 @@ async def handler(client: NewAClient, message: Neonize_pb2.Message):
                             m.chat,
                             f"💥 *Error in eval handler setup:*\n```python\n{str(e)}\n```\n```traceback\n{error_trace[-500:]}\n```",
                         )
-                elif budy.startswith("$"):
+                elif budy.startswith("&"):
                     if not is_owner:
                         return await m.reply("Only owner!")
                     command = budy[1:].strip()
                     process = await asyncio.create_subprocess_shell(
-                        command,
+                        f"zsh -c {repr(command)}",
                         stdout=asyncio.subprocess.PIPE,
                         stderr=asyncio.subprocess.PIPE,
                     )
@@ -308,7 +309,7 @@ async def handler(client: NewAClient, message: Neonize_pb2.Message):
                     if stdout:
                         await m.reply(stdout.decode())
                     if stderr:
-                        await m.reply(stderr.decode())
+                        await m.reply(stderr.decode()) 
     except Exception as e:
         print(f"[Handler Error] {e}")
         traceback.print_exc()
