@@ -209,7 +209,7 @@ async def handler(client: NewAClient, message: Neonize_pb2.Message):
             
                 mediad = await m.quoted.download()
                 media_type = m.quoted.media_type
-                caption = m.quoted.media_info.get("caption", "")  # Aman jika tidak ada caption
+                caption = m.quoted.media_info["caption"]
             
                 if media_type == "image":
                     await client.send_image(m.chat, mediad, caption=caption)
