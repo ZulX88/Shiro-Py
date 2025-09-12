@@ -203,6 +203,20 @@ async def handler(client: NewAClient, message: Neonize_pb2.Message):
             return f"*Contoh* : {prefix}{command} " + str(teks)
 
         match command:
+            case "rvo"|"readviewonce":
+                if not m.quoted.is_media:
+                    return await m.reply("Reply view once message to read it!")
+            
+                mediad = await m.quoted.download()
+                media_type = m.quoted.media_type
+                caption = m.quoted.media_info.get("caption", "")  # Aman jika tidak ada caption
+            
+                if media_type == "image":
+                    await client.send_image(m.chat, mediad, caption=caption)
+                elif media_type == "video":
+                    await client.send_video(m.chat, mediad, caption=caption)
+                else:
+                    return await m.reply("Unsupported media type for read-view-once.")
             case "fbdl" | "fb" | "facebook" | "fesnuk":
                 if not text:
                     return await m.reply(Example("link"))
