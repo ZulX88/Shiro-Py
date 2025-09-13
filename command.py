@@ -18,7 +18,7 @@ from neonize.proto import Neonize_pb2
 from neonize.proto.waE2E.WAWebProtobufsE2E_pb2 import Message
 from neonize.types import MessageServerID
 from neonize.utils import get_message_type
-from neonize.utils.enum import ReceiptType, VoteType
+from neonize.utils.enum import ReceiptType, VoteType, ParticipantChange 
 
 import config
 from scrape import copilot, fesnuk, zerochan
@@ -110,7 +110,7 @@ async def eval_message(m: Mess, cmd: str, client: NewAClient):
                     temp_file_name,
                     filename="eval_output.txt",
                     caption=f"📝 Eval output (too long):\n```python\n{cmd[:50]}{'...' if len(cmd) > 50 else ''}\n```",
-                    quoted=m.raw_message,
+                    quoted=m.message,
                 )
                 await client.edit_message(
                     m.chat,
@@ -185,11 +185,11 @@ async def handler(client: NewAClient, message: Neonize_pb2.Message):
 
         if is_group and groupMetadata:
             for participant in groupMetadata.Participants:
-                if (participant.JID.User == m.sender.User or participant.JID.User == m.sender_alt.User) and (
+                if (participant.JID.User == m.sender.User or participant.LID.User == m.sender.User) and (
                     participant.IsAdmin or participant.IsSuperAdmin
                 ):
                     is_admin = True
-                if participant.JID.User == user_bot.JID.User or participant.LID.User == user_bot.LID.User and (
+                if participant.LID.User == user_bot.LID.User and (
                     participant.IsAdmin or participant.IsSuperAdmin
                 ):
                     isBotAdmin = True
@@ -256,7 +256,7 @@ async def handler(client: NewAClient, message: Neonize_pb2.Message):
                 for user in groupMetadata.Participants:
                     tagged += f"@{user.JID.User} "
                 await client.send_message(
-                    m.chat, Message(conversation=text), ghost_mentions=tagged, mentions_are_lids=m.addressing == "LID"
+                    m.chat, Message(conversation=text), ghost_mentions=tagged, mentions_are_lids=True
                 )
             case "tt" | "tiktok":
                 if not text:
