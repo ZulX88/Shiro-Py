@@ -185,11 +185,11 @@ async def handler(client: NewAClient, message: Neonize_pb2.Message):
 
         if is_group and groupMetadata:
             for participant in groupMetadata.Participants:
-                if participant.JID.User == m.sender.User and (
+                if (participant.JID.User == m.sender.User or participant.JID.User == m.sender_alt.User) and (
                     participant.IsAdmin or participant.IsSuperAdmin
                 ):
                     is_admin = True
-                if participant.JID.User == user_bot.JID.User and (
+                if participant.JID.User == user_bot.JID.User or participant.LID.User == user_bot.LID.User and (
                     participant.IsAdmin or participant.IsSuperAdmin
                 ):
                     isBotAdmin = True
