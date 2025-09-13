@@ -99,7 +99,6 @@ class QuotedMess:
 
         info = {
             "type": media_type,
-            # Umum
             "seconds": getattr(field_value, "seconds", None),
             "caption": getattr(field_value, "caption", None),
             "mimetype": getattr(field_value, "mimetype", None),
@@ -110,16 +109,12 @@ class QuotedMess:
             "isAnimated": getattr(field_value, "isAnimated", None),
             "pageCount": getattr(field_value, "pageCount", None),
             "jpegThumbnail": getattr(field_value, "JPEGThumbnail", None),
-
-            # Enkripsi & Download
             "mediaKey": getattr(field_value, "mediaKey", None),
             "fileSHA256": getattr(field_value, "fileSHA256", None),
             "fileEncSHA256": getattr(field_value, "fileEncSHA256", None),
             "directPath": getattr(field_value, "directPath", None),
             "URL": getattr(field_value, "URL", None),
             "mediaKeyTimestamp": getattr(field_value, "mediaKeyTimestamp", None),
-
-            # Tambahan khusus
             "streamingSidecar": getattr(field_value, "streamingSidecar", None),
             "scansSidecar": getattr(field_value, "scansSidecar", None),
             "scanLengths": list(getattr(field_value, "scanLengths", [])) or None,
