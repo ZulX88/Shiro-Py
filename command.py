@@ -209,9 +209,9 @@ async def handler(client: NewAClient, message: Neonize_pb2.Message):
                 if not m.quoted.text:
                     return await m.reply("Reply pesan yang mau ditranslate")
                 data = requests.get(f"https://yrizzz.my.id/api/v1/tool/translate?from=auto&to{text}&data={urllib.parse.quote(m.quoted.text)}").json()
-                await m.reply(f"""*Detected*: {data.data.detect}
+                await m.reply(f"""*Detected*: {data["data"]["detected"]}
 *To*: {text}
-*Result*: `{data.data.translated}`""")
+*Result*: `{data["data"]["translated"]}`""")
             case "rvo"|"readviewonce":
                 if not m.quoted.is_media:
                     return await m.reply("Reply view once message to read it!")
