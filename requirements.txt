@@ -1,0 +1,4 @@
+websocket-client
+git+https://github.com/ZulX88/neonize@patch-1
+requests
+beautifulsoup4
