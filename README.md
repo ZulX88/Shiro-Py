@@ -110,7 +110,7 @@ If you like this project, consider:
 
 - ⭐ Starring it on GitHub
 - 🔄 Sharing it with friends
-- ☕ Buy me a [coffe](https://saweria.co/zhansetya)
+- ☕ Buy me a [coffee](https://saweria.co/zhansetya)
 
 ---
 
