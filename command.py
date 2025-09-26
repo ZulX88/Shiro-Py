@@ -166,16 +166,20 @@ async def handler(client: NewAClient, message: Neonize_pb2.Message):
         m = Mess(client,message)
 
         budy = m.text
-        prefix = config.prefix
-        is_cmd = budy.startswith(prefix)
+        prefix = config.prefix  
+        is_cmd = False
         command = ""
         text = ""
-        if is_cmd:
-            parts = budy[len(prefix):].strip().split(" ", 1)
-            command = parts[0].lower()
-            if len(parts) > 1:
-                text = parts[1]
-
+        
+        for p in prefix:
+            if budy.startswith(p):
+                is_cmd = True
+                parts = budy[len(p):].strip().split(" ", 1)
+                command = parts[0].lower()
+                if len(parts) > 1:
+                    text = parts[1]
+                break  
+        
         is_group = m.is_group
         groupMetadata = await client.get_group_info(m.chat) if is_group else None
         is_owner = await check_owner(m.sender)
